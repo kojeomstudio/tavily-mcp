@@ -1,0 +1,16 @@
+
+services:
+  app:
+    image: kojeomstudio/tavily-mcp:v0
+    
+    # 서비스(컨테이너)의 이름을 지정합니다. (선택 사항)
+    container_name: tavily-mcp-app
+    # 현재 디렉토리의 .env 파일에서 환경 변수를 읽어옵니다.
+    # 이 변수들은 컨테이너 내부로 주입됩니다.
+    env_file:
+      - ./.env
+    ports:
+      - "8080:8080" 
+      
+    # 컨테이너가 예기치 않게 중지되면 자동으로 다시 시작합니다.
+    restart: unless-stopped
