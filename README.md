@@ -1,6 +1,3 @@
-# ![Tavily Crawl Beta](./assets/Banner_NEW.png)
-
-
 ![GitHub Repo stars](https://img.shields.io/github/stars/tavily-ai/tavily-mcp?style=social)
 ![npm](https://img.shields.io/npm/dt/tavily-mcp)
 ![smithery badge](https://smithery.ai/badge/@tavily-ai/tavily-mcp)
@@ -35,8 +32,12 @@ Alternatively, you can pass your API key through an Authorization header if the 
 ```
 Authorization: Bearer <your-api-key>
 ```
+**Note:** When using the remote MCP, you can specify default parameters for all requests by including a `DEFAULT_PARAMETERS` header containing a JSON object with your desired defaults. Example:
 
 
+```json
+{"include_images":true, "search_depth": "basic", "max_results": 10}
+```
 ### Connect to Cursor
 [![Install MCP Server](https://cursor.com/deeplink/mcp-install-dark.svg)](https://cursor.com/en/install-mcp?name=tavily-remote-mcp&config=eyJjb21tYW5kIjoibnB4IC15IG1jcC1yZW1vdGUgaHR0cHM6Ly9tY3AudGF2aWx5LmNvbS9tY3AvP3RhdmlseUFwaUtleT08eW91ci1hcGkta2V5PiIsImVudiI6e319)
 
@@ -131,7 +132,6 @@ mcp-remote is a lightweight bridge that lets MCP clients that can only talk to l
     }
 }
 ```
-
 
 
 ## Local MCP 
@@ -356,6 +356,32 @@ Replace `your-api-key-here` with your actual [Tavily API key](https://tavily.com
       "args": ["/path/to/tavily-mcp/build/index.js"],
       "env": {
         "TAVILY_API_KEY": "your-api-key-here"
+      }
+    }
+  }
+}
+```
+
+## Default Parameters Configuration ⚙️
+
+You can set default parameter values for the `tavily-search` tool using the `DEFAULT_PARAMETERS` environment variable. This allows you to configure default search behavior without specifying these parameters in every request.
+
+### Example Configuration
+
+```bash
+export DEFAULT_PARAMETERS='{"include_images": true}'
+```
+
+### Example usage from Client
+```json
+{
+  "mcpServers": {
+    "tavily-mcp": {
+      "command": "npx",
+      "args": ["-y", "tavily-mcp@latest"],
+      "env": {
+        "TAVILY_API_KEY": "your-api-key-here",
+        "DEFAULT_PARAMETERS": "{\"include_images\": true, \"max_results\": 15, \"search_depth\": \"advanced\"}"
       }
     }
   }
