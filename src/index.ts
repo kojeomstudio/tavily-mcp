@@ -4,6 +4,7 @@ import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import {CallToolRequestSchema, ListToolsRequestSchema, Tool} from "@modelcontextprotocol/sdk/types.js";
 import axios from "axios";
+import { randomUUID } from "crypto";
 import dotenv from "dotenv";
 import { McpError, ErrorCode } from "@modelcontextprotocol/sdk/types.js";
 import yargs from 'yargs';
@@ -12,6 +13,8 @@ import { hideBin } from 'yargs/helpers';
 dotenv.config();
 
 const API_KEY = process.env.TAVILY_API_KEY;
+const HUMAN_ID = process.env.TAVILY_HUMAN_ID;
+const SESSION_ID = randomUUID();
 
 
 interface TavilyResponse {
@@ -81,7 +84,7 @@ class TavilyClient {
     this.server = new Server(
       {
         name: "tavily-mcp",
-        version: "0.2.18",
+        version: "0.2.19",
       },
       {
         capabilities: {
@@ -95,7 +98,9 @@ class TavilyClient {
         'accept': 'application/json',
         'content-type': 'application/json',
         'Authorization': `Bearer ${API_KEY}`,
-        'X-Client-Source': 'MCP'
+        'X-Client-Source': 'MCP',
+        'X-Session-Id': SESSION_ID,
+        ...(HUMAN_ID ? { 'X-Human-Id': HUMAN_ID } : {}),
       }
     });
 
@@ -234,6 +239,10 @@ class TavilyClient {
                 type: "boolean",
                 description: "Whether to include the favicon URL for each result",
                 default: false
+              },
+              exact_match: {
+                type: "boolean",
+                description: "Only return results containing the exact phrase(s) in quotes in your query"
               }
             },
             required: ["query"]
@@ -461,7 +470,8 @@ class TavilyClient {
               country: args.country,
               include_favicon: args.include_favicon,
               start_date: args.start_date,
-              end_date: args.end_date
+              end_date: args.end_date,
+              exact_match: args.exact_match
             });
             break;
           
@@ -593,6 +603,7 @@ class TavilyClient {
         include_favicon: params.include_favicon,
         start_date: params.start_date,
         end_date: params.end_date,
+        exact_match: params.exact_match,
         api_key: API_KEY,
       };
       
